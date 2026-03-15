@@ -1,0 +1,101 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- Alert for Non-Authenticated Users -->
+    {% if not user.is_authenticated %}
+        <div class="alert alert-warning text-center rounded-4">
+            <a class="text-decoration-underline" href="{% url 'login' %}" role="button">
+                Sign In <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+                in to add an item to your watchlist.
+        </div>
+    {% else %}
+        <div class="alert rounded-4 text-center" style="background-color: #ffe4b5; border: none;">
+            <h5 class="m-0 text-decoration-none fw-light">Here are the items in your watchlist.</h5>
+        </div>           
+
+        <!-- Listings Section -->
+        <div class="row g-4">
+            {% for listing in user.watchlist_listings.all %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ listing.imgUrl }}" class="card-img-top img-fluid" alt="{{ listing.name }}">
+                    
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <a href="{% url 'viewListing' id=listing.id %}" class="text-decoration-none text-dark">
+                                    <h5 class="card-title mb-0">{{ listing.name }}</h5>
+                                </a>
+                            </div>
+                            <h4 class="card-price ms-3 bg-glass rounded-2 p-2 text-dark">${{ listing.price }}</h4>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="card-text text-muted">
+                            Description:<br>
+                            {{ listing.description|truncatechars:150 }}
+                        </p>
+
+                        <!-- Footer -->
+                        {% if listing.isActive %}
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <p class="card-text fw-light fst-italic fs-6 text-secondary mb-0">Listed by: {{ listing.auctioneer }}</p>
+                            <p class="card-text fs-6 text-dark px-2 py-1 rounded-2 mb-0 text-end category-label" 
+                               data-category="{{ listing.category }}" style="border-radius: 5px;">
+                                {{ listing.category }}
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="d-flex justify-content-between w-100 mt-auto">
+                            <p class="card-text fw-light fst-italic fs-6 text-secondary mb-0 align-self-end">Listed by: {{ listing.auctioneer }}</p>
+                            <div class="d-flex flex-column align-items-end">
+                                <p class="card-text fs-6 text-light px-2 py-1 rounded-2 mb-2 bg-secondary" style="border-radius: 5px;">
+                                    Closed
+                                </p>
+                                <p class="card-text fs-6 text-dark px-2 py-1 rounded-2 mb-0 category-label" 
+                                   data-category="{{ listing.category }}" style="border-radius: 5px;">
+                                    {{ listing.category }}
+                                </p>
+                            </div>
+                        </div>                                                                                                                                                                                     
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>    
+    {% endif %}
+</div>
+<!-- JavaScript for Category Colors -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryLabels = document.querySelectorAll('.category-label');
+        categoryLabels.forEach(function(label) {
+            const category = label.getAttribute('data-category');
+
+            switch (category) {
+                case 'New':
+                    label.style.backgroundColor = 'rgba(255, 214, 132, 0.8)';  
+                    break;
+                case 'Like New':
+                    label.style.backgroundColor = 'rgba(161, 204, 202, 0.8)';  
+                    break;
+                case 'Lightly Used':
+                    label.style.backgroundColor = 'rgba(238, 180, 213, 0.8)'; 
+                    break;
+                case 'Old':
+                    label.style.backgroundColor = 'rgba(255, 158, 140, 0.8)';  
+                    break;
+                case 'Vintage Retro':
+                    label.style.backgroundColor = 'rgba(174, 148, 105, 0.8)';  
+                    break;
+                default:
+                    label.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
+                    break;
+            }
+        });
+    });
+</script>
+{% endblock %}

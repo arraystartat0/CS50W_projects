@@ -1,0 +1,190 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<!-- Success Alert for Winner -->
+{% if not listing.isActive and user == listing.price.bidder %}
+<div class="alert text-center alert-success text-success rounded-4">
+    <i class="fa-solid fa-trophy"></i> Congratulations, you won this auction.
+</div>
+{% endif %}
+
+<!-- Main Container -->
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-6 d-flex justify-content-center">
+            <img src="{{ listing.imgUrl }}" alt="{{ listing.name }}" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+            <h2>{{ listing.name }}</h2>
+            <p class="py-1 px-2 rounded-2 category-label d-inline-block" data-category="{{ listing.category }}" style="width: auto;">
+                {{ listing.category }}
+            </p>
+
+            <!-- Listing Info Card -->
+            <div class="card p-3 mb-3">
+                <!-- Price and Watchlist Status -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0">${{ listing.price }}</h4>
+                    {% if user.is_authenticated %}
+                        {% if isListingInWatchlist %}
+                            <h6 class="py-1 px-2 bg-secondary rounded-2 text-light mb-0">Watchlisted</h6>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- If User is Logged In -->
+                {% if user.is_authenticated %}
+                    
+                    <!-- Bid Form for Non-Auctioneers -->
+                    {% if listing.isActive and user != listing.auctioneer %}
+                    <form method="post" action="{% url 'placeBid' id=listing.id %}">
+                        {% csrf_token %}
+                        <div class="row mt-2">
+                            <div class="col-12 col-md-6 col-lg-9 mb-2">
+                                <input type="number" name="bid_amount" class="form-control rounded-pill" 
+                                       placeholder="Enter bid" 
+                                       min="{{ listing.price | floatformat:2 }}" 
+                                       step="0.01" required>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3 mb-2">
+                                <button type="submit" class="btn btn-outline-primary w-100 rounded-pill">Place Bid</button>
+                            </div>
+                        </div>
+                        <p class="text-center small {% if update %}text-success{% else %}text-danger{% endif %}">
+                            {{ message }}
+                        </p>
+                    </form>
+                    {% endif %}
+
+                    <!-- Watchlist Options -->
+                    <div class="row">
+                        <div class="col-12 mt-2">
+                            {% if listing.isActive %}
+                                {% if isListingInWatchlist %}
+                                    <form action="{% url 'removeFromWatchlist' id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-danger w-100 rounded-pill" type="submit">Remove from watchlist</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'addToWatchlist' id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-success w-100 rounded-pill" type="submit">Add to watchlist</button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Auctioneer Options -->
+                    <div class="row">
+                        <div class="col-12 mt-2">
+                            {% if isLister and listing.isActive %}
+                                <form action="{% url 'endAuction' id=listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger w-100 rounded-pill" type="submit">End auction</button>
+                                </form>
+                            {% endif %}
+                            {% if not listing.isActive %}
+                                <p class="text-center small text-muted">
+                                    This auction has ended.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                <!-- Display Auctioneer Info -->
+                <div class="text-start mt-2">
+                    <small class="text-muted fst-italic">Listed by: {{ listing.auctioneer }}</small>
+                </div>
+
+                {% else %}
+                <!-- If User is Not Logged In -->
+                <div class="text-start mt-2">
+                    <small class="text-muted fst-italic">Listed by: {{ listing.auctioneer }}</small>
+                </div>
+                <p class="text-muted text-center mt-2" style="font-size:1rem;"><a class="text-decoration-underline" href="{% url 'login' %}" role="button">
+                    Sign In <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a> to add an item to your watchlist, place a bid and add this item to your watchlist.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Product Description Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h5>Product Description</h5>
+            <p style="white-space: pre-wrap;"> <!-- Preserve whitespaces -->
+                {{ listing.description|safe }} <!-- Display safe HTML -->
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Comments Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h5>Comments</h5>
+
+            <!-- Existing Comments -->
+            <div class="mb-3">
+                {% for comment in allComments %}
+                <div class="border rounded-4 p-3 mb-2">
+                    <strong>{{ comment.commentor }}</strong>
+                    <p>-{{ comment.comment }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Add Comment Form -->
+            {% if user.is_authenticated %}
+            <hr>
+            <form action="{% url 'newComment' id=listing.id %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Comment</label>
+                    <textarea class="form-control" name="comment" id="comment" rows="3" placeholder="Write your comment here" maxlength="250"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Dynamic Category Colors -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categoryLabels = document.querySelectorAll('.category-label');
+        categoryLabels.forEach(function (label) {
+            const category = label.getAttribute('data-category');
+
+            switch (category) {
+                case 'New':
+                    label.style.backgroundColor = 'rgba(255, 214, 132, 0.8)';
+                    break;
+                case 'Like New':
+                    label.style.backgroundColor = 'rgba(161, 204, 202, 0.8)';
+                    break;
+                case 'Lightly Used':
+                    label.style.backgroundColor = 'rgba(238, 180, 213, 0.8)';
+                    break;
+                case 'Old':
+                    label.style.backgroundColor = 'rgba(255, 158, 140, 0.8)';
+                    break;
+                case 'Vintage Retro':
+                    label.style.backgroundColor = 'rgba(174, 148, 105, 0.8)';
+                    break;
+                default:
+                    label.style.backgroundColor = 'rgba(200, 200, 200, 0.8)';
+                    break;
+            }
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container d-flex justify-content-center align-items-center" style="height:90vh;">
+        <div class="card p-4 w-100" style="max-width: 600px;">
+            <!-- Alert for Non-Authenticated Users -->
+            {% if not user.is_authenticated %}
+                <div class="alert alert-warning text-center rounded-4">
+                    <a class="text-decoration-underline" href="{% url 'login' %}" role="button">
+                        Sign In <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+                        to make a listing.
+                </div>
+            {% else %}
+
+            <h2 class="text-center mb-4">Create a new listing</h2>
+            <form action="{% url 'createNew' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" maxlength="80" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" placeholder="Description" maxlength="1500" name="description"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imgUrl" class="form-label">Image URL</label>
+                    <input type="text" class="form-control" id="imgUrl" name="imgUrl" placeholder="Image URL" maxlength="2083">
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" class="form-control" placeholder="Price" id="price" name="price">
+                </div>
+                <div class="mb-3">
+                    <label for="condition" class="form-label">Condition:</label>
+                    <select class="form-select" id="condition" name="condition" required>
+                        {% for condition in categories %}
+                            <option value="{{ condition }}">{{ condition }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success rounded-pill w-100">Create <i class="fa-solid fa-plus ms-3 fa-sm"></i></button>
+                {% if error_message %}
+                    <p class="text-danger mt-2 text-center">{{ error_message }}</p>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
