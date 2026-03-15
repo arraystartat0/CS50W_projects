@@ -1,0 +1,78 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 0;
+  border: 2px solid #000;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* apply Modal Specific Styles */
+.apply-modal {
+  max-width: 800px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+.apply-modal .modal-header {
+  border-bottom: 1px solid #000;
+  padding-bottom: 1rem;
+}
+
+.apply-modal .btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.apply-modal .btn-close:hover {
+  opacity: 0.7;
+}
+
+.apply-modal .job-details {
+  background-color: #f8f9fa;
+}
+
+.apply-modal .form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.apply-modal .form-control {
+  border-radius: 0;
+  border: 1px solid #000;
+}
+
+.apply-modal .form-control:focus {
+  border-color: #AACDBE;
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(89, 193, 115, .25);
+}
+
+.apply-modal .is-invalid {
+  border-color: #dc3545;
+}
+
+.apply-modal .invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}

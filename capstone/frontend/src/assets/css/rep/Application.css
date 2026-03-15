@@ -1,0 +1,8 @@
+.hover-green {
+    transition: all var(0.2s) ease-in-out;
+}
+
+.hover-green:hover {
+    background-color: var(--hover-bg) !important;
+    color: rgb(91, 110, 102) !important;
+}

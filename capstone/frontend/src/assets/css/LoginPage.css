@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap');
+
+.card-wrapper:before{
+  content: "";
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(
+    270deg, 
+    #D6E7DF,
+    #cce9d5, /* pale green */
+    #fff3e0,  /* pale orange */
+    #FFF9F0
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  /* Adjust polygon points for a different diagonal shape */
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 0 50%);
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.btn-fillGreen,
+.btn-fillRed {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius:0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.card-wide {
+  min-width: 40vw;
+}
+
+.btn-fillGreen:hover,
+.btn-fillRed:hover {
+  border-radius:0rem;
+  transition:ease-in 0.5s;
+}
+
+.btn-fillGreen span,
+.btn-fillRed span {
+  position: relative;
+  z-index: 2;
+  color: black !important;
+}
+
+.transition-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.transition-icon i {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  right: 8%; 
+  z-index: 2;
+}
+
+.icon-default {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.icon-hover {
+  opacity: 0;
+  transform: translateX(-10px); /* Shift slightly left to create a smooth effect */
+  z-index: 2;
+}
+
+.transition-icon:hover .icon-default {
+  opacity: 0;
+  transform: translateX(10px); /* Move out to the right */
+  z-index: 2;
+}
+
+.transition-icon:hover .icon-hover {
+  opacity: 1;
+  transform: translateX(0); /* Move in smoothly */
+  z-index: 2;
+}
+
+.btn-fillGreen::after,
+.btn-fillRed::after  {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  z-index: 1;
+  transition: width 0.5s ease;
+  pointer-events: none; 
+}
+
+.btn-fillGreen::after {
+  background: #AACDBE;
+}
+
+.btn-fillRed::after {
+  background: #ED9FA6;
+}
+
+.btn-fillGreen:hover::after,
+.btn-fillRed:hover::after {
+  width: 100%;
+}
+
+.card-wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-card {
+  background: #fff;
+  width: 420px;
+  max-width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  text-align: center;
+}
+
+.card-heading {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s ease;
+}
+
+.tab-btn.active {
+  color: #000;
+  border-bottom: 2px solid #AACDBE;
+}
+
+.tab-btn:hover {
+  color: #AACDBE;
+}
+
+.tab-content-area {
+  margin-top: 1rem;
+  position: relative;
+  min-height: 180px;
+}
+
+.tab-transition {
+  animation: fadeInUp 0.3s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-form .form-label {
+  text-align: left;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.login-form input.form-control {
+  margin-bottom: 1rem;
+}
+
+.login-form button {
+  margin-top: 0.5rem;
+}
+
+.form-control:focus {
+  border-color: #AACDBE;
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(89, 193, 115, .25);
+}

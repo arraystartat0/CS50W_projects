@@ -1,0 +1,65 @@
+/* Sidebar Variables */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-bg: #f8f9fa;
+    --sidebar-padding: 20px;
+    --sidebar-active-bg: rgba(170, 205, 190, 0.5);
+    --sidebar-active-border: 1px solid black;
+    --sidebar-text-color: rgb(91, 110, 102);
+    --transition-speed: 0.2s;
+  }
+  
+  /* Sidebar Container */
+  .rep-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    height: 100vh;
+    padding: var(--sidebar-padding);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  /* Sidebar Menu */
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar-menu li {
+    margin: 0.6rem 0;
+    transition: all var(--transition-speed) ease-in-out;
+  }
+  
+  /* Sidebar Links */
+  .sidebar-menu a {
+    text-decoration: none;
+    color: var(--sidebar-text-color);
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Sidebar Icons */
+  .sidebar-menu i {
+    margin-right: 1rem;
+  }
+  
+  /* Small Text */
+  .small-text {
+    font-size: 0.8rem;
+  }
+  
+  /* Active State */
+  .sidebar-menu li.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    border-radius: 0.1rem;
+  }
+  
+  /* Hover Effects on Inactive Items */
+  .inactive:hover {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    border-radius: 0;
+  }
+  

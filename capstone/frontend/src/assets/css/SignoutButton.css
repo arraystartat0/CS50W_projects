@@ -1,0 +1,25 @@
+:root {
+  --hover-bg-danger:rgba(228, 61, 61, 0.5);
+}
+
+.signout-btn {
+  width: 40px;
+  height: 40px;
+  margin-right: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+
+
+.signout-btn:hover {
+  background-color: var(--hover-bg-danger);
+  color: rgb(228, 61, 61) !important;
+  border-radius: 0;
+}

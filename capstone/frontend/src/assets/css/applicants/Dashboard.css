@@ -1,0 +1,198 @@
+.badge {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: black;
+  border: black 1px solid;
+}
+
+/* Global Reset & Variables */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --font-family: "Poppins", sans-serif;
+  --body-bg: #fff;
+  --body-color: #000;
+  --light-bg: #f8f9fa;
+  --white: #fff;
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --green: green;
+  --primary-color: #6c5dd3;
+  --secondary-color: #ff7f50;
+  --tertiary-color: #4a90e2;
+  --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+  --mobile-modal-overlay-bg: rgba(0, 0, 0, 0.4);
+  --hover-bg: rgba(170, 205, 190, 0.5);
+}
+
+/* Base Styles */
+body {
+  font-family: var(--font-family);
+  background-color: var(--body-bg);
+  color: var(--body-color);
+  margin: 0;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70vw;
+  height: 50vh;
+  background: radial-gradient(
+    circle at top right,
+    rgba(91, 110, 102, 0.4) 0%,
+    rgba(91, 110, 102, 0) 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layout */
+.rep-dashboard {
+  display: flex;
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  padding: 20px;
+  background: var(--white);
+  max-width: 100vw;
+}
+
+/* Typography */
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.dashboard-section h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+  background: var(--white);
+  padding: 15px;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+}
+
+.dashboard-section canvas {
+  max-height: 300px; /* Adjust as needed */
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 15px;
+}
+
+/* Buttons */
+
+.hamburger-menu {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Mobile Header Icons */
+.mobile-header-icons {
+  display: flex;
+  align-items: center;
+}
+
+/* Modals */
+.modal-overlay,
+.mobile-menu-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  background-color: var(--modal-overlay-bg);
+}
+
+.mobile-menu-modal {
+  background-color: var(--mobile-modal-overlay-bg);
+  z-index: 999;
+}
+
+/* Modal Content */
+.modal-content,
+.mobile-menu-content {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 4px;
+  width: 80%;
+  max-width: 500px;
+  position: relative;
+}
+
+.mobile-menu-content {
+  max-width: 300px;
+  border-radius: 5px;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.stat-value {
+  font-size: 4rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.stat-icon-value i {
+  font-size: 0.875rem;
+}
+
+.stat-icon-value {
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.hover-link:hover {
+  background-color: var(--hover-bg);
+  color: rgb(91, 110, 102) !important;
+  border-radius: 0;
+}
+
+.mobile-stat-card {
+  padding: 0.5rem 0.75rem;
+}
+
+.mobile-stat-icon {
+  font-size: 1rem;
+}
+
+.mobile-stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+}

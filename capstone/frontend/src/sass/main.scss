@@ -1,0 +1,27 @@
+$dark: #3F3D56;
+$secondary:#f9f8fa;
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+// override Bootstrap’s $theme-colors with richer pastel hex status shades
+$custom-theme-colors: (
+  "hireFlow-green":         #D6E7DF,
+  "hireFlow-green-dark":    #5b6e66,
+  "emphasis":               #FBC687,
+  "light-green":            #F4F7C5,
+  "green":                  #59C173,
+  "light-gray":             #D3D3D3,
+  "leaf-green":             #AACDBE,
+  "active":                 #AFD9C3, 
+  "decision-pending":       #F8D0AF,  
+  "unopened":               #D9DFE6,  
+  "inactive":               #D9DFE6,
+  "interview-scheduled":    #B3D6F3, 
+  "rejected":               #F5B2B2,
+  "under-review":           #F7CB73,
+);
+
+$theme-colors: map-merge($custom-theme-colors, $theme-colors);
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
