@@ -1,0 +1,30 @@
+{% extends "mail/layout.html" %}
+
+{% block body %}
+<div class="d-flex justify-content-center align-items-center" style="height:90vh;">
+  <div class="card p-4 rounded-4" style="background-color: #403d39; width: 100%; max-width: 400px; color: #fff;">
+    <h2 class="text-center mb-4"><i class="fa-solid fa-right-to-bracket fa-xs"></i> Login</h2>
+
+    {% if message %}
+      <div class="alert alert-warning text-center bg-opacity-25" role="alert">{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group mb-3">
+        <input autofocus class="form-control" type="email" name="email" placeholder="Email">
+      </div>
+      <div class="form-group mb-3">
+        <input class="form-control" type="password" name="password" placeholder="Password">
+      </div>
+      <div class="d-grid">
+        <input class="btn btn-success" type="submit" value="Login">
+      </div>
+    </form>
+
+    <p class="text-center mt-3">
+      Don't have an account? <a href="{% url 'register' %}" style="color:#eb5e28;">Register here <i class="fa-solid fa-up-right-from-square fa-xs"></i></a>
+    </p>
+  </div>
+</div>
+{% endblock %}
