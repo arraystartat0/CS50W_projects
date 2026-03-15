@@ -1,0 +1,274 @@
+.custom-textarea-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-textarea-wrapper::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  height: 2px;
+  /* Border thickness */
+  background-color: #333;
+  /* Border color */
+  transition: left 0.3s ease, right 0.3s ease;
+}
+
+.custom-textarea-wrapper:focus-within::after,
+.custom-textarea-wrapper:hover::after {
+  left: 2%;
+  right: 2%;
+}
+
+.custom-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-input-wrapper::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  height: 2px; /* Border thickness */
+  background-color: #333; /* Border color */
+  transition: left 0.3s ease, right 0.3s ease;
+}
+
+.custom-input-wrapper:focus-within::after,
+.custom-input-wrapper:hover::after {
+  left: 2%;
+  right: 2%;
+}
+
+
+.form-control:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+@keyframes takeOff {
+  0% {
+    transform: translate(0,0) rotate(0);
+    opacity: 1;
+  }
+  10%{
+    transform: translate(10px, 0) rotate(0);
+    opacity: 1;
+  }
+  20%{
+    transform: translate(20px, 0) rotate(0);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(25px, -15px) rotate(-3.125deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(50px, -30px) rotate(-6.25deg);
+    opacity: 0.75;
+  }
+  75%{
+    transform: translate(75px, -45px) rotate(-12.5deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(100px, -60px) rotate(-18.75deg);
+    opacity: 0;
+  }
+}
+
+.material-symbols-outlined.takeOff {
+  transition: transform 0.3s ease;
+}
+
+.btn:hover .material-symbols-outlined.takeOff {
+  animation: takeOff 0.30s ease-in forwards;
+}
+
+.view-tab {
+  position: relative;
+  cursor: pointer;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.view-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: black;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.view-tab.active::after {
+  width: 100%;
+  left: 0;
+}
+
+.view-tab:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.likeBtn .material-symbols-outlined {
+  transition: transform 0.3s ease;
+}
+
+.likeBtn:hover .material-symbols-outlined {
+  transform: scale(1.4);
+}
+
+.btn-black{
+  background-color: black;
+}
+
+.animate-like {
+  animation: like-scale 0.3s ease;
+}
+
+@keyframes like-scale {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 992px) {
+  .w-lg-50 {
+    width: 50% !important;
+  }
+}
+
+/* Style pagination */
+.pagination .page-link {
+  border: 1px solid #343a40;
+  color: #343a40;
+}
+
+.pagination.page-link {
+  background-color: #343a40;
+  border-color: #343a40;
+  color: #fff;
+}
+
+.pagination .page-link:focus {
+  box-shadow: none;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+}
+
+.stats span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats strong {
+  font-size: 16px;
+}
+
+.hoverLight {
+  transition: all 0.2s ease-in-out;
+}
+
+.hoverLight:hover {
+  background-color: transparent !important;
+  border: 1px solid black !important;
+  color: black !important;
+}
+
+.alert-black{
+  background-color: black;
+}
+
+.alert-overlay {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050; /* Makes sure it overlaps other content */
+}
+
+.alert-overlay .alert {
+  animation: fadeOut 4s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100%{
+    opacity:0;
+  }
+}
+
+.logout{
+  transition: 0.2s ease;
+}
+
+.logout:hover{
+  background-color: #dc3546;
+  color:#f8f9fa;
+}
+
+.hoverDark{
+  transition: 0.2s ease;
+}
+
+.hoverDark:hover{
+  background-color: black;
+  color:#f8f9fa !important;
+}
+
+.hoverUnderline {
+  position: relative;
+  display: inline-block;
+}
+
+.hoverUnderline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.hoverUnderline:hover::after {
+  width: 100%;
+}

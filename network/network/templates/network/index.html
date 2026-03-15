@@ -1,0 +1,433 @@
+{% extends 'network/layout.html' %}
+{% block body %}
+  <script type="text/javascript">
+    const username = "{% if user.is_authenticated %}{{ user.username }}!{% else %}{% endif %}";
+    const currentUserId = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
+    const currentUser = {% if user.is_authenticated %}"{{ user.username }}"{% else %}""{% endif %};
+    const followingIds = JSON.parse('{{ following_ids|default:"[]"|escapejs }}');
+    const loginUrl = "{% url 'login' %}";
+    window.editPostUrl = "{% url 'editPost' %}";
+  </script>
+
+  <!-- Hidden container for Django-rendered posts data -->
+  <div id="django-posts" style="display: none;">
+    {% for post in allPosts %}
+      <div class="post-data" 
+           data-id="{{ post.id }}" 
+           data-author="{{ post.user.username }}"
+           data-author-id="{{ post.user.id }}"
+           data-content="{{ post.content|escapejs }}" 
+           data-time="{{ post.date }}" 
+           data-likes="{{ post.like_count }}" 
+           data-liked="{% if user in post.likes.all %}true{% else %}false{% endif %}">
+      </div>
+    {% endfor %}
+  </div>  
+
+  <script type="text/javascript">
+    const newPostUrl = "{% url 'newPost' %}";
+
+    function getCsrfToken() {
+      return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+  
+    async function fetchWithCsrf(url, options = {}) {
+      const csrfToken = getCsrfToken();
+      options.headers = {
+        ...options.headers,
+        "X-CSRFToken": csrfToken,
+        "Content-Type": "application/json",
+      };
+      const response = await fetch(url, options);
+      const newCsrfToken = response.headers.get("X-CSRFToken");
+      if (newCsrfToken) {
+        document.querySelector('meta[name="csrf-token"]').setAttribute("content", newCsrfToken);
+      }
+      return response;
+    }
+
+    function formatNumber(num) {
+      if (num >= 1e9) {
+        return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+      }
+      if (num >= 1e6) {
+        return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      }
+      if (num >= 1e3) {
+        return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+      }
+      return num;
+    }    
+  </script>
+
+  <!-- React Mounting Point -->
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div id="react-app" class="col-12 col-lg-6 d-flex flex-column justify-content-center pt-4 p-0 bg-light">
+        {% verbatim %}
+        <script type="text/babel">
+          // PostCard component remains mostly the same
+          function PostCard({ post, onToggleLike, showLoginAlert, onSaveEdit, onError }) {
+            const [isAnimating, setIsAnimating] = React.useState(false);
+            const [isEditing, setIsEditing] = React.useState(false);
+            const [postContent, setPostContent] = React.useState(post.content);
+            const [editedContent, setEditedContent] = React.useState(post.content);
+          
+            const handleLike = () => {
+              if (currentUserId) {
+                setIsAnimating(true);
+                setTimeout(() => setIsAnimating(false), 300);
+                onToggleLike(post.id);
+              } else {
+                showLoginAlert();
+              }
+            };
+          
+            const handleEditClick = () => {
+              setIsEditing(true);
+            };
+          
+            const handleSaveClick = async () => {
+              try {
+                const response = await fetchWithCsrf(editPostUrl, {
+                  method: "POST",
+                  body: JSON.stringify({
+                    post_id: post.id,
+                    content: editedContent,
+                  }),
+                });
+                if (response.ok) {
+                  const data = await response.json();
+                  setPostContent(data.new_content);
+                  setIsEditing(false);
+                  onSaveEdit(post.id, data.new_content);
+                } else {
+                  throw new Error("Failed to update post.");
+                }
+              } catch (error) {
+                onError("Error updating post. Please try again.");
+                // Optionally revert to original content if needed.
+              }
+            };
+          
+            return (
+              <div className="card bg-transparent rounded-0 border border-start-0 border-top-0 border-end-0 px-1">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <h5 className="card-title mb-0">
+                        <a
+                          href={`/profile/${post.authorId}`}
+                          className="text-decoration-none text-dark hoverUnderline"
+                        >
+                          {post.author}
+                        </a>
+                      </h5>
+                      <small className="text-muted">{post.time}</small>
+                    </div>
+                    {post.author === currentUser && !isEditing && (
+                      <div>
+                        <button
+                          className="btn p-1 text-black border-black rounded-1 d-flex justify-content-center align-items-center hoverDark"
+                          onClick={handleEditClick}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: "30px" }}>
+                            edit
+                          </span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {isEditing ? (
+                    <div className="d-flex flex-column">
+                      <div className="custom-textarea-wrapper">
+                        <textarea
+                          className="form-control border-0 p-1 bg-transparent rounded-0"
+                          value={editedContent}
+                          onChange={(e) => setEditedContent(e.target.value)}
+                          rows="3"
+                        />
+                      </div>
+                      <div className="d-flex justify-content-end mt-2">
+                        <button 
+                          className="btn p-1 me-2 mt-2 text-black border-black rounded-1 d-flex justify-content-center align-items-center hoverDark" 
+                          onClick={() => setIsEditing(false)}
+                        >
+                          <span className="material-symbols-outlined">close</span>
+                        </button>
+                        <button 
+                          className="btn py-1 px-3 mt-2 bg-black text-light rounded-1 d-flex justify-content-center align-items-center hoverLight" 
+                          onClick={handleSaveClick}
+                        >
+                          Save <span className="material-symbols-outlined ms-1">check</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="card-text mt-2">{postContent}</p>
+                  )}                              
+                  <div className="d-flex align-items-center">
+                    <button
+                      className={`btn border-1 p-1 d-flex justify-content-center align-items-center likeBtn ${post.liked ? "border-danger bg-danger" : "border-black"}`}
+                      onClick={handleLike}
+                    >
+                      <span
+                        className={`material-symbols-outlined ${isAnimating ? "animate-like" : ""} ${post.liked ? "text-light" : "text-secondary"}`}
+                        style={{ fontSize: "20px" }}
+                      >
+                        {post.liked ? "favorite" : "favorite"}
+                      </span>
+                    </button>
+                    <span className="ms-1">{formatNumber(post.likes)}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          
+          // PostsList component: expects all posts, then filters them based on active view.
+          function PostsList({ posts, onToggleLike, showLoginAlert, onSaveEdit, onError }) {
+            return (
+              <div>
+                {posts.map(post => (
+                  <PostCard 
+                    key={post.id} 
+                    post={post} 
+                    onToggleLike={onToggleLike} 
+                    showLoginAlert={showLoginAlert}
+                    onSaveEdit={onSaveEdit}
+                    onError={onError}
+                  />
+                ))}
+              </div>
+            );
+          }
+          
+          // PostsApp component with client-side pagination and tab filtering.
+          function PostsApp() {
+            // Load all posts from the hidden container
+            const initialPosts = Array.from(document.querySelectorAll(".post-data")).map(postEl => ({
+              id: postEl.getAttribute("data-id"),
+              author: postEl.getAttribute("data-author"),
+              authorId: parseInt(postEl.getAttribute("data-author-id"), 10),
+              content: JSON.parse('"' + postEl.getAttribute("data-content") + '"'),
+              time: postEl.getAttribute("data-time"),
+              likes: parseInt(postEl.getAttribute("data-likes"), 10),
+              liked: postEl.getAttribute("data-liked") === "true"
+            }));
+          
+            const [posts, setPosts] = React.useState(initialPosts);
+            const [activeView, setActiveView] = React.useState("all"); // "all", "following", "mine"
+            const [alertMessage, setAlertMessage] = React.useState("");
+            const [currentPage, setCurrentPage] = React.useState(1);
+            const postsPerPage = 10;
+          
+            const showLoginAlert = () => {
+              setAlertMessage(`Please <a href="${loginUrl}" class="alert-link">sign in<span class="material-symbols-outlined align-middle" style="vertical-align: middle;">call_made</span></a> to like posts.`);
+              setTimeout(() => setAlertMessage(""), 4000);
+            };
+          
+            const showError = (message) => {
+              setAlertMessage(message);
+              setTimeout(() => setAlertMessage(""), 4000);
+            };
+          
+            const toggleLike = async (postId) => {
+              if (!currentUserId) {
+                showLoginAlert();
+                return;
+              }
+              const originalPosts = [...posts];
+              try {
+                const response = await fetchWithCsrf(`/toggle_like/${postId}/`, {
+                  method: "POST",
+                });
+                if (!response.ok) {
+                  throw new Error("Failed to toggle like.");
+                }
+                const data = await response.json();
+                setPosts(posts.map(post => 
+                  post.id === postId ? { ...post, liked: data.liked, likes: data.likes ?? 0 } : post
+                ));
+              } catch (error) {
+                showError("Error updating like. Please try again.");
+                setPosts(originalPosts);
+              }
+            };
+          
+            const handleSaveEdit = (postId, newContent) => {
+              setPosts(posts.map(post =>
+                post.id === postId ? { ...post, content: newContent } : post
+              ));
+            };
+          
+            // Filter posts based on active view.
+            let filteredPosts = posts;
+            if (activeView === "mine") {
+              filteredPosts = posts.filter(post => post.authorId === currentUserId);
+            } else if (activeView === "following") {
+              filteredPosts = posts.filter(post => followingIds.includes(post.authorId));
+            }
+          
+            // Implement client-side pagination.
+            const indexOfLastPost = currentPage * postsPerPage;
+            const indexOfFirstPost = indexOfLastPost - postsPerPage;
+            const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+            const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+          
+            const handlePageChange = (pageNumber) => {
+              setCurrentPage(pageNumber);
+            };
+          
+            // When active view changes, reset page to 1.
+            React.useEffect(() => {
+              setCurrentPage(1);
+            }, [activeView]);
+          
+            return (
+              <div>
+                {alertMessage && (
+                  <div className="alert-overlay">
+                    <div 
+                      className="alert alert-black rounded-1 px-4 py-1 text-light text-center" 
+                      role="alert"
+                      dangerouslySetInnerHTML={{ __html: alertMessage }}
+                    />
+                  </div>
+                )}
+          
+                {/* Tabs */}
+                <div className="row mb-3 w-100">
+                  <div className="col text-center">
+                    <span 
+                      className={`view-tab text-dark ${activeView === "following" ? "active" : ""}`} 
+                      onClick={() => setActiveView("following")}
+                    >
+                      Following
+                    </span>
+                  </div>
+                  <div className="col text-center">
+                    <span 
+                      className={`view-tab text-dark ${activeView === "all" ? "active" : ""}`} 
+                      onClick={() => setActiveView("all")}
+                    >
+                      All Posts
+                    </span>
+                  </div>
+                  <div className="col text-center">
+                    <span 
+                      className={`view-tab text-dark ${activeView === "mine" ? "active" : ""}`} 
+                      onClick={() => setActiveView("mine")}
+                    >
+                      My Posts
+                    </span>
+                  </div>
+                </div>
+          
+                {/* New Post Form */}
+                {currentUser && (
+                  <div className="card p-3 w-100 bg-transparent border border-2 border-top-0 border-start-0 border-end-0 rounded-0">
+                    <form action={newPostUrl} method="POST">
+                      <input 
+                        type="hidden" 
+                        name="csrfmiddlewaretoken" 
+                        value={document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+                      />
+                      <div className="d-flex align-items-start mb-3">
+                        <div className="custom-textarea-wrapper w-100">
+                          <textarea 
+                            className="form-control border-0 p-1 bg-transparent rounded-0" 
+                            placeholder="What's on your mind today?" 
+                            name="content" 
+                            rows="3" 
+                            required>
+                          </textarea>
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-end align-items-center">
+                        <button className="btn btn-black py-1 px-3 text-light rounded-1 hoverLight d-flex align-items-center" type="submit">
+                          Share <span className="material-symbols-outlined ms-2 takeOff">send</span>
+                        </button>                                        
+                      </div>
+                    </form>
+                  </div>
+                )}
+          
+                {/* Render posts based on the current page */}
+                {(activeView === "following" || activeView === "mine") && !currentUserId ? (
+                <div className="alert alert-black text-white rounded-1 fw-light text-center mt-3">
+                  {activeView === "mine" ? (
+                    <>
+                      Please <a className="text-white" href={loginUrl}>
+                        sign in
+                        <span className="material-symbols-outlined align-middle" style={{ verticalAlign: "middle" }}>call_made</span>
+                      </a>
+                      to view your posts.
+                    </>
+                  ) : (
+                    <>
+                      Please <a className="text-white" href={loginUrl}>
+                        sign in
+                        <span className="material-symbols-outlined align-middle" style={{ verticalAlign: "middle" }}>call_made</span>
+                      </a>
+                      to view posts from users you follow.
+                    </>
+                  )}
+                </div>
+              ) : (
+                <PostsList 
+                  posts={currentPosts} 
+                  onToggleLike={toggleLike} 
+                  showLoginAlert={showLoginAlert}
+                  onSaveEdit={handleSaveEdit}
+                  onError={showError} 
+                />
+              )}
+          
+                {/* Pagination Controls */}
+                <div className="d-flex justify-content-center my-3">
+                  {currentPage > 1 && (
+                    <button 
+                      className="btn btn-black text-white rounded-1 py-1 px-3 hoverLight" 
+                      onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                      Previous
+                    </button>
+                  )}
+                  {currentPage < totalPages && (
+                    <button 
+                      className="btn btn-black text-white rounded-1 py-1 px-3 mx-2 hoverLight" 
+                      onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  )}
+                </div>      
+                
+                {/* Footer */}
+                <Footer />
+              </div>
+            );
+          }
+
+          function Footer() {
+            const currentYear = new Date().getFullYear();
+            return (
+              <footer className="mt-4 bg-black py-4">
+                <div className="text-center">
+                  <p className="fw-light text-white mb-1">
+                    © {currentYear} Bhatt Studios. All rights reserved.
+                  </p>
+                </div>
+              </footer>
+            );
+          }
+
+          
+          ReactDOM.createRoot(document.getElementById('react-app')).render(<PostsApp />);
+        </script>
+                {% endverbatim %}
+              </div>
+            </div>
+        {% endblock %}        
+        
