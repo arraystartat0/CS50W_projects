@@ -6,11 +6,11 @@ Each project lives on its own branch:
 
 | Branch | Description |
 |--------|-------------|
-| `capstone` | Final capstone project |
-| `commerce` | eBay-like auction site |
+| `capstone` | HireFlow - Internship management SaaS - Final capstone project |
+| `commerce` | stockX-like auction site |
 | `mail` | Single-page email client |
-| `network` | Twitter-like social network |
-| `search` | Google Search front-end |
+| `network` | My take on a social network - Spire |
+| `search` | Google Search front-end - first project |
 | `wiki` | Wikipedia-like encyclopedia |
 
 ## Viewing a Project
